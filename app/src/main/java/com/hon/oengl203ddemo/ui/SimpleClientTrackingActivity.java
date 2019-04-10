@@ -54,7 +54,7 @@ public class SimpleClientTrackingActivity extends BaseActivity implements ImageT
 
         mWikitudeSDK.onCreate(getApplicationContext(), this, startupConfiguration);
 
-              //识别的二维图片
+        //识别的二维图片
         mTargetCollectionResource = mWikitudeSDK.getTrackerManager().createTargetCollectionResource("file:///android_asset/art01.wtc", new TargetCollectionResourceLoadingCallback() {
             @Override
             public void onError(int errorCode, String errorMessage) {

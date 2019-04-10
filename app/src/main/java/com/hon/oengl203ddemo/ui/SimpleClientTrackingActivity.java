@@ -14,6 +14,7 @@ import com.hon.oengl203ddemo.utils.ToastUtil;
 import com.hon.oengl203ddemo.ar_model_view.ModelSurfaceView;
 import com.wikitude.NativeStartupConfiguration;
 import com.wikitude.WikitudeSDK;
+import com.wikitude.common.WikitudeError;
 import com.wikitude.common.camera.CameraSettings;
 import com.wikitude.common.rendering.RenderExtension;
 import com.wikitude.rendering.ExternalRendering;
@@ -56,9 +57,10 @@ public class SimpleClientTrackingActivity extends BaseActivity implements ImageT
 
               //识别的二维图片
         mTargetCollectionResource = mWikitudeSDK.getTrackerManager().createTargetCollectionResource("file:///android_asset/art01.wtc", new TargetCollectionResourceLoadingCallback() {
+
             @Override
-            public void onError(int errorCode, String errorMessage) {
-                Log.v(TAG, "Failed to load target collection resource. Reason: " + errorMessage);
+            public void onError(WikitudeError wikitudeError) {
+                Log.v(TAG, "Failed to load target collection resource. Reason: " + wikitudeError.getMessage());
             }
 
             @Override
@@ -121,19 +123,30 @@ public class SimpleClientTrackingActivity extends BaseActivity implements ImageT
     }
 
     @Override
-    public void onErrorLoadingTargets(ImageTracker imageTracker, int i, String s) {
+    public void onErrorLoadingTargets(ImageTracker imageTracker, WikitudeError wikitudeError) {
 
     }
 
     @Override
-    public void onImageRecognized(ImageTracker imageTracker, String s) {
+    public void onImageRecognized(ImageTracker imageTracker, ImageTarget imageTarget) {
         previousTime=System.currentTimeMillis();
         runOnUiThread(new Runnable() {
-           @Override
-           public void run() {
-               ToastUtil.showToast(getApplicationContext(),"onImageRecognized :)");
-           }
-       });
+            @Override
+            public void run() {
+                ToastUtil.showToast(getApplicationContext(),"onImageRecognized :)");
+            }
+        });
+    }
+
+    @Override
+    public void onImageLost(ImageTracker imageTracker, ImageTarget imageTarget) {
+        mRenderer.setCurrentlyRecognizedTarget(null);
+        previousTime=currentTime=System.currentTimeMillis();
+    }
+
+    @Override
+    public void onExtendedTrackingQualityChanged(ImageTracker imageTracker, ImageTarget imageTarget, int i, int i1) {
+
     }
 
     @Override
@@ -146,17 +159,6 @@ public class SimpleClientTrackingActivity extends BaseActivity implements ImageT
             previousTime=currentTime=System.currentTimeMillis();
             startActivity(DisplayActivity.class);
         }
-    }
-
-    @Override
-    public void onImageLost(ImageTracker imageTracker, String s) {
-        mRenderer.setCurrentlyRecognizedTarget(null);
-        previousTime=currentTime=System.currentTimeMillis();
-    }
-
-    @Override
-    public void onExtendedTrackingQualityChanged(ImageTracker imageTracker, String s, int i, int i1) {
-
     }
 
     @Override

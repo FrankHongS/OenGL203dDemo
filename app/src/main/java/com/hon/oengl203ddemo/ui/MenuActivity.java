@@ -1,5 +1,7 @@
 package com.hon.oengl203ddemo.ui;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -11,11 +13,13 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.hon.oengl203ddemo.R;
 import com.hon.oengl203ddemo.utils.ContentUtil;
 import com.hon.oengl203ddemo.utils.FileUtil;
 import com.hon.oengl203ddemo.utils.ToastUtil;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 /**
  * Created by Frank_Hon on 2017/4/23.
@@ -28,12 +32,25 @@ public class MenuActivity extends AppCompatActivity {
 
     private ListView mListView;
 
+    @SuppressLint("CheckResult")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        mListView=(ListView)findViewById(R.id.lv_content);
+        final RxPermissions rxPermissions=new RxPermissions(this);
+        rxPermissions
+                .request(Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)
+                .subscribe(granted->{
+                    if (granted){
+
+                    }else {
+                        finish();
+                    }
+                });
+
+        mListView=findViewById(R.id.lv_content);
         BaseAdapter adapter=new ArrayAdapter<>(this,android.R.layout.simple_list_item_1,addItems());
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
